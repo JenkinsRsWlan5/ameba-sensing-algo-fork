@@ -16,20 +16,6 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 #----------------------------------------#
 # Component public part, user config begin
 
-#each scene owns its NN model and the code that differs between scenes, released as its own lib
-if(CONFIG_RADAR_M_FRIDGE_SCENE)
-    set(scene_dir m_fridge)
-else()
-    set(scene_dir general)
-endif()
-set(release_target_name radar_${scene_dir})
-#lib is kept in this sub-repo like audio, km55tz/km55ns share c_MCU_TYPE so use project name
-set(release_lib_dir ${c_CMPT_SENSING_ALGO_DIR}/libs/${c_SOC_TYPE}/${c_MCU_PROJECT_NAME})
-
-ameba_list_append(public_libraries
-    ${release_lib_dir}/lib_${release_target_name}.a
-)
-
 #only the public API header is exported, radar internals stay private
 ameba_list_append(public_includes
     ${c_CMPT_SENSING_ALGO_DIR}/include
@@ -54,6 +40,13 @@ set(private_compile_options)         #private compile_options
 #------------------------------#
 # Component private part, user config begin
 
+#each scene owns its NN model and the code that differs between scenes
+if(CONFIG_RADAR_M_FRIDGE_SCENE)
+    set(scene_dir m_fridge)
+else()
+    set(scene_dir general)
+endif()
+
 ameba_list_append(private_sources
     wifi_radar.c
     ${scene_dir}/wifi_radar_${scene_dir}.c
@@ -72,8 +65,7 @@ endif()
 # Component private part, user config end
 #------------------------------#
 
-###NOTE: For closed-source component, only build before release and libs are packaged into ${release_lib_dir}
-ameba_add_external_module_library(${release_target_name} ${release_lib_dir}
+ameba_add_internal_library(wifi_radar
     p_SOURCES
         ${private_sources}
     p_INCLUDES

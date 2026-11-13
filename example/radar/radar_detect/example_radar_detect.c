@@ -308,7 +308,7 @@ static void radar_detect_thread(void *param)
 		RTK_LOGE(NOTAG, "[radar] algo init fail\n");
 	}
 
-	/* radar cfg and enable */
+	/* cis cfg and csi en */
 	act_param.act = RTW_RADAR_ACT_CFG;  /* radar cfg */
 	wifi_radar_config(&act_param);
 
